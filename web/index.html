@@ -1,0 +1,111 @@
+<!-- TODO: добавить коментарии на страницу -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="/favicon.ico">
+
+    <title>Задаем вопросы в реальном времени</title>
+    <meta name="description" content="публикация сравнения работы механизмов распознавания речи">
+    <meta name="keywords" content="распознавание речи, сравнение">
+    <meta name="author" content="iqtek">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <script src="//cdn.rawgit.com/centrifugal/centrifuge-js/2.4.0/dist/centrifuge.min.js"></script>
+    <script language="JavaScript">
+
+      var centrifuge = new Centrifuge('wss://127.0.0.1:8443/connection/websocket');
+      centrifuge.subscribe("calls", function(message) {
+        console.log(message.data.type);
+          if (message.data.type == "call") {
+            call = "call" + message.data.call_id;
+            console.log(call);
+            $("#qa-box").append("<div id='call" + message.data.call_id + "'></div>" );
+            $("#" + call).append($("#template").html());
+            $("#" + call + " .template_call .template_phone").html("..." + message.data.callerid);
+            $("#" + call + " .template_call .template_date").html(message.data.calldate);
+            $("#" + call + " .template_phrase").html("");
+            $("#" + call + " .template_call").removeClass("d-none");
+            $("#" + call + " .template_phrase").removeClass("d-none");
+          }
+          if (message.data.type == "phrase") {
+            call = "call" + message.data.call_id;
+            phrase = "phrase" + message.data.phrase_id;
+            if (!$('#' + phrase).length) {
+              phrase_html = $("#template .template_phrase").html();
+              $("#" + call + " .template_phrase").append(phrase_html);
+              $("#" + call + " .template_phrase .template_phrase_one").attr('id',phrase);
+            }
+
+            $("#" + phrase).html(message.data.phrase);
+          }
+      });
+      centrifuge.connect();
+    </script>
+    <!-- Custom styles for this template -->
+    <link href="style.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <header>
+      <div class="navbar navbar-dark bg-dark box-shadow">
+        <div class="container d-flex justify-content-between">
+          <a href="#" class="navbar-brand d-flex align-items-center">
+            <strong>Задаем вопросы в реальном времени</strong>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+7(499)380-90-48
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main role="main" class="container">
+      <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-purple rounded shadow-sm">
+        <img class="mr-3" src="/docs/4.4/assets/brand/bootstrap-outline.svg" alt="" width="48" height="48">
+        <div class="lh-100">
+          <h6 class="mb-0 text-white lh-100">Bootstrap</h6>
+          <small>Since 2011</small>
+        </div>
+      </div>
+    
+      <div class="my-3 p-3 bg-white rounded shadow-sm" id="qa-box">
+        <h6 class="border-bottom border-gray pb-2 mb-0">Вопросы</h6>
+
+        <!-- -->
+        <div class="d-none" id="template">
+        <div class="media text-muted pt-3 d-none template_call" id="template_call">
+          <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"/><text x="50%" y="50%" fill="#007bff" dy=".3em">32x32</text></svg>
+          <p class="media-body pb-3 mb-0 small lh-125">
+            <strong class="d-block text-gray-dark template_phone"></strong>
+            <strong class="d-block text-gray-dark template_date"></strong>
+          </p>
+        </div>
+        <div class="text-muted pt-1 border-bottom border-gray d-none template_phrase">
+          <p class="d-block template_phrase_one"></p>
+        </div>
+      </div>
+        <!-- -->
+      </div>
+  
+    </main>
+
+    <footer class="text-muted">
+      <div class="container">
+        <p class="float-right">
+          <a href="#">Наверх</a>
+        </p>
+        <p>&copy; <a href="https://iqtek.ru">Айтек</a> 2020</p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+</html>
